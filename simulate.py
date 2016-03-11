@@ -32,10 +32,9 @@ FREQ_UNITS = {
 
 APP_NAMES_TO_FILES = {
  'DC'  : '/apps/DEMO_CAR/DemoCar-PowerUp.amxmi',
- 'CSE' : '/apps/CONTROL_SYSTEM_ENGINE.amxmi',
 }
 
-MAPPINGS = ['KhalidDC', 'MinComm', 'Static', 'StaticSM', 'StaticTriCore', 'ZigZag', 'ZigZagSM', '3Core', 'Randomfixed', 'StaticModes']
+MAPPINGS = ['MinComm', 'Static', 'StaticTriCore', 'ZigZag', '3Core']
 
 class ValidateMapping(argparse.Action):
     def __call__(self, parser, args, values, option_string=None):
@@ -81,7 +80,7 @@ def main():
     parser = argparse.ArgumentParser(description='Abstract Simulator Runner script')
     parser.add_argument('-d', '--syntax_dependency', action='store_true', help='consider successive runnables in tasks call graph as dependent')
     appGroup = parser.add_mutually_exclusive_group()
-    appGroup.add_argument('-da', '--def_application', help='specify the application to be simulated among the default ones', choices=['DC','CSE'])
+    appGroup.add_argument('-da', '--def_application', help='specify the application to be simulated among the default ones', choices=['DC'])
     appGroup.add_argument('-ca', '--custom_application', help='specify a custom application file to be simulated')
     parser.add_argument('-e', '--simuEnd', help='specify the end time of simulation in nanosecond', type=int)
     parser.add_argument('-f', '--freq', help='specify the frequency of all the cores in the platform (i.g 400MHz or 1GHz)', action=ValidateFreq)
@@ -122,6 +121,8 @@ def main():
     out = os.path.dirname(os.path.realpath(__file__)) + DEFAULT_OUTPUT_FOLDER
     if args.output_folder:
         out = args.output_folder
+    if not os.path.exists(out):
+        os.makedirs(out)
     sched = DEFAULT_SCHEDULING_STRATEGY
     if args.scheduling_strategy:
         sched = args.scheduling_strategy
@@ -171,7 +172,7 @@ def main():
          my_env['LD_LIBRARY_PATH'] = my_env.get('LD_LIBRARY_PATH', '') + ':' + xerces_home + '/lib'
 
     # Run the simulation
-    cmd = [os.path.dirname(os.path.realpath(__file__)) + '/src/Platform_Src/obj/bin/NoC_PPA', '-i', str(its), '-m', mapping]
+    cmd = [os.path.dirname(os.path.realpath(__file__)) + '/obj/mcsim-ca-xbar', '-i', str(its), '-m', mapping]
     if mappingFile:
         cmd.append(mappingFile)
     if mappingSeed:
@@ -213,10 +214,10 @@ def main():
         sys.exit(-1)
 
     # Run the energy estimator module
-    cmd = ['./Power_Multiproc', out, os.path.dirname(os.path.realpath(__file__)) + '/src/Energy_Estimator/']
+    cmd = [os.path.dirname(os.path.realpath(__file__)) + '/obj/energy_estimator', out, os.path.dirname(os.path.realpath(__file__)) + '/src/energy_estimator/']
     if args.verbose:
         print cmd
-    nrj = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=os.path.dirname(os.path.realpath(__file__)) + '/src/Energy_Estimator')
+    nrj = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = nrj.communicate()
     if nrj.wait() != 0:
         print stderr,

@@ -1,3 +1,5 @@
 /xbar-debug/
 /mcsim-ca-xbar-debug/
 /mcsim-ca-xbar-release/
+OUTPUT_FILES
+obj
