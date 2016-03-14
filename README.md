@@ -1,23 +1,23 @@
-# McSim-Cycle-accurate-NoC : Manycore platform Simulation tool for NoC-based platform at a Cycle-accurate level
+# McSim-Cycle-accurate-Xbar : Manycore platform Simulation tool for crossbar-based platform at a Cycle-accurate level
 
 This repository contains a simulator able to simulate embedded applications described using
-the [AMALTHEA](http://www.amalthea-project.org/) application model on top of NoC-based architectures in a cycle accurate way. This simulator is based on [NoCTweak](https://sourceforge.net/projects/noctweak/).
+the [AMALTHEA](http://www.amalthea-project.org/) application model on top of crossbar-based architectures in a cycle accurate way. This simulator is based on [NoCTweak](https://sourceforge.net/projects/noctweak/).
 
-To get the simulator you must clone this repository and its submodules. To clone the repository if you have a GitHub account with an SSH key registered use `git clone git@github.com:DreamCloud-Project/McSim-Cycle-accurate-NoC.git`. Else use `git clone https://github.com/DreamCloud-Project/McSim-Cycle-accurate-NoC.git`. Then use `git submodule init` followed by `git submodule update` to clone submodules.
+To get the simulator you must clone this repository and its submodules. To clone the repository if you have a GitHub account with an SSH key registered use `git clone git@github.com:DreamCloud-Project/McSim-Cycle-accurate-Xbar.git`. Else use `git clone https://github.com/DreamCloud-Project/McSim-Cycle-accurate-Xbar.git`. Then use `git submodule init` followed by `git submodule update` to clone submodules.
 
 ## Using the simulator
 
 To ease the usage of the simulator, two python scripts are provided:  
 
-- compile.py for compilation  
-- simulate.py for launching the simulation  
+- `compile.py` for compilation  
+- `simulate.py` for launching the simulation  
 
 The requirements for using these scripts are the following ones:  
 
 - have CMake installed on your system [(https://cmake.org)](https://cmake.org/)
-- define the SYSTEMC_HOME variable pointing to a SystemC 2.3.1 root folder
+- define the `SYSTEMC_HOME` variable pointing to a SystemC 2.3.1 root folder
 - have the xerces-c-dev library installed in standard includes and libs folders (using apt-get for example)
-  or have xerces-c-dev library in a custom folder and define XERCES_HOME
+  or have xerces-c-dev library in a custom folder and define `XERCES_HOME`
 
 ### Compiling the simulator
 
@@ -27,7 +27,7 @@ Compilation is done through the `compile.py` script which documentation is the f
 >> ./compile.py --help
 usage: compile.py [-h] [-v] {build,clean} ...
 
-Cycle accurate simulator compiler script
+Crossbar simulator compiler script
 
 optional arguments:
   -h, --help     show this help message and exit
@@ -41,19 +41,23 @@ valid subcommands:
 
 To run a particular simulation, just run the `simulate.py` script. By
 default this script runs one iteration of the Demo Car application on
-a 4x4 NoC using ZigZag mapping, First Come First Serve (fcfs)
+a 4x4 crossbar-based many core using ZigZag mapping, First Come First Serve (fcfs)
 scheduling and without repeating periodic runnables.  You can play
 with all these parameters which documentation is the following:
 
 ```
 >>./simulate.py --help
-usage: simulate.py [-h] [-d] [-da {DC}] [-ca CUSTOM_APPLICATION] [-f FREQ]
-                   [-mf MODES_FILE]
+usage: simulate.py [-h] [-d] [-da {DC}] [-ca CUSTOM_APPLICATION] [-e SIMUEND]
+                   [-f FREQ] [-mf MODES_FILE] [-i ITERATIONS]
                    [-m MAPPING_STRATEGY [MAPPING_STRATEGY ...]] [-np]
-                   [-o OUTPUT_FOLDER] [-r] [-s {prio}] [-v] [-x ROWS]
-                   [-y COLS]
+                   [-o OUTPUT_FOLDER] [-r] [-s {fcfs,prio}] [-v] [-x ROWS]
+                   [-xbp {Full,RoundRobin,Priority}] [-xbfs XBARFIFOSIZE]
+                   [-xblrl XBARLOCALREADLATENCY]
+                   [-xblwl XBARLOCALWRITELATENCY]
+                   [-xbrrl XBARREMOTEREADLATENCY]
+                   [-xbrwl XBARREMOTEWRITELATENCY] [-y COLS]
 
-Cycle accurate simulator runner script
+Crossbar simulator runner script
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -65,28 +69,44 @@ optional arguments:
                         default ones
   -ca CUSTOM_APPLICATION, --custom_application CUSTOM_APPLICATION
                         specify a custom application file to be simulated
-  -f FREQ, --freq FREQ  specify the frequency of cores in the NoC. Supported
-                        frequency units are Hz, KHz, MHz and GHz e.g 400MHz or
-                        1GHz
+  -e SIMUEND, --simuEnd SIMUEND
+                        specify the end time of simulation in nanosecond
+  -f FREQ, --freq FREQ  specify the frequency of all the cores in the platform
+                        (i.g 400MHz or 1GHz)
   -mf MODES_FILE, --modes_file MODES_FILE
                         specify a modes switching file to be simulated
+  -i ITERATIONS, --iterations ITERATIONS
+                        specify the number of application to execute (has no
+                        effect with -p)
   -m MAPPING_STRATEGY [MAPPING_STRATEGY ...], --mapping_strategy MAPPING_STRATEGY [MAPPING_STRATEGY ...]
                         specify the mapping strategy used to map runnables on
-                        cores and labels on memories. Valide strategies are
-                        ['MinComm', 'Static', 'ZigZag', 'Random']
+                        cores. Valide strategies are ['MinComm', 'Static',
+                        'StaticTriCore', 'ZigZag', '3Core']
   -np, --no_periodicity
                         run periodic runnables only once
   -o OUTPUT_FOLDER, --output_folder OUTPUT_FOLDER
                         specify the absolute path of the output folder where
                         simulation results will be generated
-  -r, --random          replace constant seed used to generate distributions
-                        by a random one based on current time
-  -s {prio}, --scheduling_strategy {prio}
+  -r, --random          replace constant seed used to generate instructions
+                        timing distributions by a random one based on the time
+  -s {fcfs,prio}, --scheduling_strategy {fcfs,prio}
                         specify the scheduling strategy used by cores to
                         choose the runnable to execute
   -v, --verbose         enable verbose output
-  -x ROWS, --rows ROWS  specify the number of rows in the NoC
-  -y COLS, --cols COLS  specify the number of columns in the NoC
+  -x ROWS, --rows ROWS  specify the number of rows in the platform
+  -xbp {Full,RoundRobin,Priority}, --xbarPolicy {Full,RoundRobin,Priority}
+                        specify the cross bar arbitration plociy
+  -xbfs XBARFIFOSIZE, --xbarFifoSize XBARFIFOSIZE
+                        specify the cross bar fifos size
+  -xblrl XBARLOCALREADLATENCY, --xbarLocalReadLatency XBARLOCALREADLATENCY
+                        specify the latency of local read
+  -xblwl XBARLOCALWRITELATENCY, --xbarLocalWriteLatency XBARLOCALWRITELATENCY
+                        specify the latency of local write
+  -xbrrl XBARREMOTEREADLATENCY, --xbarRemoteReadLatency XBARREMOTEREADLATENCY
+                        specify the latency of remote read
+  -xbrwl XBARREMOTEWRITELATENCY, --xbarRemoteWriteLatency XBARREMOTEWRITELATENCY
+                        specify the latency of remote write
+  -y COLS, --cols COLS  specify the number of columns in the platform
 ```
 
 ## Licence
