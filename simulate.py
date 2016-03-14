@@ -77,7 +77,7 @@ class ValidateFreq(argparse.Action):
 def main():
     ''' Run the abstract simulator '''
     # Configure parameters parser
-    parser = argparse.ArgumentParser(description='Abstract Simulator Runner script')
+    parser = argparse.ArgumentParser(description='Crossbar simulator runner script')
     parser.add_argument('-d', '--syntax_dependency', action='store_true', help='consider successive runnables in tasks call graph as dependent')
     appGroup = parser.add_mutually_exclusive_group()
     appGroup.add_argument('-da', '--def_application', help='specify the application to be simulated among the default ones', choices=['DC'])
