@@ -4,7 +4,7 @@ This repository contains a simulator able to simulate embedded applications desc
 the [AMALTHEA](http://www.amalthea-project.org/) application model on top of crossbar-based manycore architectures in a cycle accurate way. This simulator has been developed by the LIRMM laboratory of Montpellier.
 
 
-To get the simulator you must clone this repository and its submodules. To clone the repository if you have a GitHub account with an SSH key registered use `git clone git@github.com:DreamCloud-Project/McSim-Cycle-accurate-Xbar.git`. Else use `git clone https://github.com/DreamCloud-Project/McSim-Cycle-accurate-Xbar.git`. Then use `git submodule init` followed by `git submodule update` to clone submodules.
+To get the simulator you must clone this repository and its submodules. To clone the repository if you have a GitHub account with an SSH key registered use `git clone git@github.com:DreamCloud-Project/McSim-Cycle-accurate-Xbar.git`. Else use `git clone https://github.com/DreamCloud-Project/McSim-Cycle-accurate-Xbar.git`. Then do `cd McSim-Cycle-accurate-Xbar` followed by `git submodule init` followed by `git submodule update` to clone submodules.
 
 ## Using the simulator
 
