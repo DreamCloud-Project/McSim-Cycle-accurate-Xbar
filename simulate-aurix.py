@@ -28,7 +28,6 @@ FREQ_UNITS = {
 
 APP_NAMES_TO_FILES = {
  'DC'  : '/apps/DEMO_CAR/DemoCar-PowerUp.amxmi',
- 'CSE' : '/apps/CONTROL_SYSTEM_ENGINE.amxmi',
 }
 
 MAPPINGS = ['ZigZag', 'Static', 'StaticModes']
@@ -78,7 +77,7 @@ def main():
     parser = argparse.ArgumentParser(description='Crossbar Simulator Runner script')
     parser.add_argument('-d', '--syntax_dependency', action='store_true', help='consider successive runnables in tasks call graph as dependent')
     appGroup = parser.add_mutually_exclusive_group()
-    appGroup.add_argument('-da', '--def_application', help='specify the application to be simulated among the default ones', choices=['DC','CSE'])
+    appGroup.add_argument('-da', '--def_application', help='specify the application to be simulated among the default ones', choices=['DC'])
     appGroup.add_argument('-ca', '--custom_application', help='specify a custom application file to be simulated')
     parser.add_argument('-e', '--simuEnd', help='specify the end time of simulation in nanosecond', type=int)
     parser.add_argument('-f', '--freq', help='specify the frequency of all the cores in the platform (i.g 400MHz or 1GHz)', action=ValidateFreq)
