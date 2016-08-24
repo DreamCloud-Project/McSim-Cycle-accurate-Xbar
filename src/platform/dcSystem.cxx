@@ -97,7 +97,7 @@ void dcSystem::dumpTaskAndRunnableGraphFile() {
 	for (std::vector<dcTask *>::iterator it = tasks.begin(); it != tasks.end();
 			++it) {
 		dcGraphDotFile << "\tsubgraph cluster" << i << " {" << endl;
-		dcRunnableCall *run = (*it)->GetRunnableCalls();
+		dcRunnableCall *run = (*it)->GetTaskRunnableCalls();
 		while (run != NULL) {
 			dcGraphDotFile << "\t\t" << run->GetRunClassName();
 			dcGraphDotFile << "[label=\"";
